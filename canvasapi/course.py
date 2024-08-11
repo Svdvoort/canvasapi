@@ -759,7 +759,7 @@ class Course(CanvasObject):
             _kwargs=combine_kwargs(**kwargs),
         )
 
-    def get_assignment(self, assignment, **kwargs):
+    def get_assignment(self, assignment: int | Assignment, **kwargs) -> Assignment:
         """
         Return the assignment with the given ID.
 
@@ -771,7 +771,6 @@ class Course(CanvasObject):
 
         :rtype: :class:`canvasapi.assignment.Assignment`
         """
-        from canvasapi.assignment import Assignment
 
         assignment_id = obj_or_id(assignment, "assignment", (Assignment,))
 
@@ -782,7 +781,26 @@ class Course(CanvasObject):
         )
         return Assignment(self._requester, response.json())
 
-    def get_assignment_group(self, assignment_group, **kwargs):
+    def get_assignments(self, **kwargs) -> PaginatedList[Assignment]:
+        """
+        List all of the assignments in this course.
+
+        :calls: `GET /api/v1/courses/:course_id/assignments \
+        <https://canvas.instructure.com/doc/api/assignments.html#method.assignments_api.index>`_
+
+        :rtype: :class:`canvasapi.paginated_list.PaginatedList` of
+            :class:`canvasapi.assignment.Assignment`
+        """
+
+        return PaginatedList(
+            Assignment,
+            self._requester,
+            "GET",
+            "courses/{}/assignments".format(self.id),
+            _kwargs=combine_kwargs(**kwargs),
+        )
+
+    def get_assignment_group(self, assignment_group: str | AssignmentGroup, **kwargs) -> AssignmentGroup:
         """
         Retrieve specified assignment group for the specified course.
 
@@ -794,7 +812,6 @@ class Course(CanvasObject):
 
         :rtype: :class:`canvasapi.assignment.AssignmentGroup`
         """
-        from canvasapi.assignment import AssignmentGroup
 
         assignment_group_id = obj_or_id(
             assignment_group, "assignment_group", (AssignmentGroup,)
@@ -810,7 +827,7 @@ class Course(CanvasObject):
 
         return AssignmentGroup(self._requester, response_json)
 
-    def get_assignment_groups(self, **kwargs):
+    def get_assignment_groups(self, **kwargs) -> PaginatedList[AssignmentGroup]:
         """
         List assignment groups for the specified course.
 
@@ -820,7 +837,6 @@ class Course(CanvasObject):
         :rtype: :class:`canvasapi.paginated_list.PaginatedList` of
             :class:`canvasapi.assignment.AssignmentGroup`
         """
-        from canvasapi.assignment import AssignmentGroup
 
         return PaginatedList(
             AssignmentGroup,
@@ -855,25 +871,6 @@ class Course(CanvasObject):
             _kwargs=combine_kwargs(**kwargs),
         )
 
-    def get_assignments(self, **kwargs):
-        """
-        List all of the assignments in this course.
-
-        :calls: `GET /api/v1/courses/:course_id/assignments \
-        <https://canvas.instructure.com/doc/api/assignments.html#method.assignments_api.index>`_
-
-        :rtype: :class:`canvasapi.paginated_list.PaginatedList` of
-            :class:`canvasapi.assignment.Assignment`
-        """
-        from canvasapi.assignment import Assignment
-
-        return PaginatedList(
-            Assignment,
-            self._requester,
-            "GET",
-            "courses/{}/assignments".format(self.id),
-            _kwargs=combine_kwargs(**kwargs),
-        )
 
     def get_assignments_for_group(self, assignment_group, **kwargs):
         """
@@ -1137,7 +1134,7 @@ class Course(CanvasObject):
 
         return DiscussionTopic(self._requester, response_json)
 
-    def get_discussion_topics(self, **kwargs):
+    def get_discussion_topics(self, **kwargs) -> PaginatedList[DiscussionTopic]:
         """
         Returns the paginated list of discussion topics for this course or group.
 
