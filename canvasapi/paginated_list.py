@@ -1,13 +1,16 @@
 import re
+from typing import Generic, TypeVar
+from canvasapi.requester import Requester
 
+T = TypeVar('T')
 
-class PaginatedList(object):
+class PaginatedList(Generic[T]):
     """
     Abstracts `pagination of Canvas API \
     <https://canvas.instructure.com/doc/api/file.pagination.html>`_.
     """
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice):
         assert isinstance(index, (int, slice))
         if isinstance(index, int):
             if index < 0:
@@ -20,12 +23,12 @@ class PaginatedList(object):
     def __init__(
         self,
         content_class,
-        requester,
-        request_method,
-        first_url,
-        extra_attribs=None,
-        _root=None,
-        _url_override=None,
+        requester: Requester,
+        request_method: str,
+        first_url: str,
+        extra_attribs: None | dict = None,
+        _root: None | str = None,
+        _url_override: None| str = None,
         **kwargs
     ):
         """
